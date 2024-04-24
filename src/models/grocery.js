@@ -14,6 +14,10 @@ const grocerySchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  minPrice: {
+    type: Number,
+    required: true
+  },
   expirationDate: {
     type: Date,
     required: true
