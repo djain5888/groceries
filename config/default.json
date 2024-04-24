@@ -1,0 +1,6 @@
+{
+    "mongoURI": "mongodb+srv://djain5888:Deepak%40321@cluster0.jb66uqs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+  
+    "jwtSecret":"uuidgen"
+  }
+  
