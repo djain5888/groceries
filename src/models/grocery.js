@@ -30,6 +30,9 @@ const grocerySchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  location:{
+    type:String
+  },
   bids: [{
     userId: {
       type: mongoose.Schema.Types.ObjectId,
