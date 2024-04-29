@@ -57,6 +57,7 @@ router.post('/', authenticate, async (req, res) => {
     quantity,
     expirationDate,
     location,
+  
     minPrice,
     sellerContact, // Assuming this is provided in the request body
     bids // Assuming bids are provided in the request body as an array
@@ -73,9 +74,10 @@ router.post('/', authenticate, async (req, res) => {
       if (!grocery) {
         return res.status(404).json({ message: 'Grocery not found' });
       }
-
+      console.log(req.user.id)
       // Update fields with new values
       grocery.itemName = itemName;
+      grocery.userId=req.user.id
       grocery.quantity = quantity;
       grocery.expirationDate = expirationDate;
       grocery.location = location;
@@ -84,11 +86,15 @@ router.post('/', authenticate, async (req, res) => {
       grocery.bids = bids; // Update bids with new values
     } else {
       // Create new grocery
+      console.log(req.user.id)
       grocery = new Grocery({
+        
+
         itemName,
         quantity,
         expirationDate,
         location,
+        userId: req.user.id,
         minPrice,
         sellerContact,
         status: 'available', // Assuming this is the default status for new groceries
@@ -111,10 +117,10 @@ router.post('/', authenticate, async (req, res) => {
 //Place a bid on a grocery listing
 // Place a bid on a grocery listing
 router.post('/:id/bids', authenticate, async (req, res) => {
-  const { amount } = req.body; // Changed from price to amount
+  const { amount ,quantity} = req.body; // Changed from price to amount
   const groceryId = req.params.id;
   const buyerId = req.user.id;
-
+  
   try {
     const grocery = await Grocery.findById(groceryId);
     if (!grocery) {
@@ -122,15 +128,17 @@ router.post('/:id/bids', authenticate, async (req, res) => {
     }
 
     // Check if grocery.seller exists before calling the equals method
-    if (grocery.sellerContact && grocery.sellerContact==(buyerId)) {
+    if (grocery.sellerContact && grocery.userId==(buyerId)) {
       return res.status(400).json({ message: 'You cannot bid on your own grocery listing' });
     }
-
+    console.log(quantity)
     if (amount < grocery.minPrice) {
       return res.status(400).json({ message: 'Bid price cannot be lower than minimum price' });
     }
-
-    grocery.bids.push({ buyer: buyerId, amount }); // Changed from price to amount
+    if (quantity > grocery.quantity) {
+      return res.status(400).json({ message: 'Bid quantity exceeds available quantity' });
+    }
+    grocery.bids.push({ buyer: buyerId, amount,quantity }); // Changed from price to amount
     await grocery.save();
     res.status(201).json({ message: 'Bid placed successfully' });
   } catch (err) {
@@ -160,7 +168,7 @@ router.post('/:id/accept-bid', authenticate, async (req, res) => {
     if (!bid) {
       return res.status(404).json({ message: 'Bid not found' });
     }
-
+    grocery.quantity-=bid.quantity
     grocery.acceptedBid = bidId;
     bid.status = 'accepted';
     await grocery.save();

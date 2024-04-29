@@ -14,6 +14,10 @@ const grocerySchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  minPrice: {
+    type: Number,
+    required: true
+  },
   expirationDate: {
     type: Date,
     required: true
@@ -25,6 +29,9 @@ const grocerySchema = new mongoose.Schema({
   sellerContact: { // Add field for seller's contact information
     type: String,
     required: true
+  },
+  location:{
+    type:String
   },
   bids: [{
     userId: {
