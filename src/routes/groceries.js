@@ -13,6 +13,16 @@ router.get('/', authenticate, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+router.get('/userspecificgrocery', authenticate, async (req, res) => {
+  try {
+    // Filter groceries by user ID
+    const groceries = await Grocery.find({ userId: req.user.id });
+    res.json(groceries);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 // router.get('/', async (req, res) => {
 //   try {
 //     const groceries = await Grocery.find();
