@@ -34,9 +34,10 @@ const grocerySchema = new mongoose.Schema({
     type:String
   },
   bids: [{
-    userId: {
+    buyerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      ref: 'User',
+      required:true
     },
     amount: {
       type: Number,
