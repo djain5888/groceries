@@ -168,6 +168,11 @@ router.post('/:id/accept-bid', authenticate, async (req, res) => {
     if (!bid) {
       return res.status(404).json({ message: 'Bid not found' });
     }
+    if(bid.quantity>grocery.quantity)
+    {
+      return res.status(404).json({ message: 'Bids Quantity exceeds the available Quantity' });
+
+    }
     grocery.quantity-=bid.quantity
     grocery.acceptedBid = bidId;
     bid.status = 'accepted';
