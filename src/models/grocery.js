@@ -37,7 +37,7 @@ const grocerySchema = new mongoose.Schema({
     buyerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required:true
+      // required:true
     },
     amount: {
       type: Number,
