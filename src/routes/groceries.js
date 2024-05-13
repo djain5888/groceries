@@ -51,6 +51,48 @@ router.get('/userspecificgrocery', authenticate, async (req, res) => {
 //   }
 // });
 
+
+router.get('/UserBids', authenticate,async (req, res) => {
+  // const userId = parseInt(req.params.userId);
+  // const userBids = bids.filter(bid => bid.groceryId === userId);
+  // res.json(userBids);
+  userid=req.user.id
+  try {
+    const userId = req.user.id; // Assuming you have access to the authenticated user's ID
+
+    // Find all groceries
+    const allGroceries = await Grocery.find({}).lean();
+
+    // Initialize an empty array to store matching bids
+    let matchedBids = [];
+
+    // Loop through each grocery
+    allGroceries.forEach(grocery => {
+      // Check if grocery.bids exists and is an array
+      if (grocery.bids && Array.isArray(grocery.bids)) {
+        // Loop through each bid in the grocery
+        grocery.bids.forEach(bid => {
+          console.log("buyerid",String(bid.buyerId))
+          // Check if the buyerId of the bid matches the userId
+          if (String(bid.buyerId) === userId) {
+            // console.log("inside matchingg bods")
+            matchedBids.push(bid);
+          }
+        });
+      }
+    });
+
+    if (matchedBids.length === 0) {
+      return res.status(404).json({ message: 'No matching bids found for the user' });
+    }
+
+    // Now matchedBids contains only the bids matching the authenticated user's ID
+    res.status(200).json({ matchedBids });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 router.post('/', authenticate, async (req, res) => {
   const {
     itemName,
@@ -120,6 +162,7 @@ router.post('/:id/bids', authenticate, async (req, res) => {
   const { amount ,quantity} = req.body; // Changed from price to amount
   const groceryId = req.params.id;
   const buyerId = req.user.id;
+  console.log('buyer iddd', buyerId)
   
   try {
     const grocery = await Grocery.findById(groceryId);
@@ -138,7 +181,7 @@ router.post('/:id/bids', authenticate, async (req, res) => {
     if (quantity > grocery.quantity) {
       return res.status(400).json({ message: 'Bid quantity exceeds available quantity' });
     }
-    grocery.bids.push({ buyer: buyerId, amount,quantity }); // Changed from price to amount
+    grocery.bids.push({ buyerId, amount,quantity }); // Changed from price to amount
     await grocery.save();
     res.status(201).json({ message: 'Bid placed successfully' });
   } catch (err) {
