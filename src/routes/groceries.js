@@ -13,6 +13,16 @@ router.get('/', authenticate, async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+router.get('/userspecificgrocery', authenticate, async (req, res) => {
+  try {
+    // Filter groceries by user ID
+    const groceries = await Grocery.find({ userId: req.user.id });
+    res.json(groceries);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 // router.get('/', async (req, res) => {
 //   try {
 //     const groceries = await Grocery.find();
@@ -211,6 +221,26 @@ router.post('/:id/accept-bid', authenticate, async (req, res) => {
   }
 });
 
+router.get('/:id/bids',authenticate ,async (req, res) => {
+  const groceryId = req.params.id;
+  console.log('grocery id',groceryId)
+
+  try {
+    // Find grocery by ID and include only the bids field
+    const grocery = await Grocery.findById(groceryId, 'bids');
+
+    // If no grocery found, return 404 Not Found
+    if (!grocery) {
+      return res.status(404).json({ message: 'Grocery not found' });
+    }
+
+    // Otherwise, return the grocery with bids
+    res.json(grocery);
+  } catch (error) {
+    console.error('Error fetching grocery:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 
 // Other routes for updating and deleting groceries can be added similarly
 
