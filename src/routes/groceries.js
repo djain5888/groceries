@@ -75,7 +75,7 @@ router.get('/UserBids', authenticate,async (req, res) => {
           console.log("buyerid",String(bid.buyerId))
           // Check if the buyerId of the bid matches the userId
           if (String(bid.buyerId) === userId) {
-            // console.log("inside matchingg bods")
+            console.log("inside matchingg bods")
             matchedBids.push(bid);
           }
         });
@@ -206,10 +206,15 @@ router.post('/:id/accept-bid', authenticate, async (req, res) => {
     if (!grocery.sellerContact==(sellerId)) {
       return res.status(403).json({ message: 'You are not authorized to accept bids on this grocery listing' });
     }
+    
 
     const bid = grocery.bids.find(b => b._id.equals(bidId));
     if (!bid) {
       return res.status(404).json({ message: 'Bid not found' });
+    }
+    if(bid.status == 'accepted')
+    {
+      return res.status(404).json({message:'Bid already accepted '})
     }
     if(bid.quantity>grocery.quantity)
     {
