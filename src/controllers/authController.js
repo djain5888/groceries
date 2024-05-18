@@ -62,7 +62,7 @@ exports.verify = async (req, res) => {
     }
     
     // Mark user as verified
-    user.isVerified = true;
+    user.verified = true;
     user.verificationToken = null;
     await user.save();
     
@@ -86,7 +86,7 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
     // Check if user is verified
-    if (user.verified) {
+    if (!user.verified) {
       return res.status(400).json({ message: 'Email not verified' });
     }
     // Generate JWT token
