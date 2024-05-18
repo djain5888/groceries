@@ -1,5 +1,21 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const nodemailer = require('nodemailer');
+const express = require('express');
+const router = express.Router();
+
+
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false,
+  service: 'Gmail',
+  auth: {
+    user: 'deepak90619@gmail.com',
+    pass: 'xodhqbqxfyeomkjj'
+  }
+});
 
 exports.register = async (req, res) => {
   try {
@@ -13,9 +29,19 @@ exports.register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     // Create user
-    user = new User({ name, email, password: hashedPassword ,address});
+    const verificationToken = require('crypto').randomBytes(32).toString('hex');
+
+    user = new User({ name, email, password: hashedPassword ,address,verificationToken});
     await user.save();
-    res.json({ message: 'User registered successfully' });
+    const verificationLink = `https://groceries-i18z.onrender.com/api/auth/verify-email?token=${verificationToken}`;
+    await transporter.sendMail({
+      to: email,
+      subject: 'Email Verification',
+      html: `<h2>Email Verification</h2>
+             <p>Click the link below to verify your email:</p>
+             <a href="${verificationLink}">${verificationLink}</a>`
+    });
+    res.json({ message: 'User registered successfully Please check your email to verify your account.' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
@@ -24,6 +50,28 @@ exports.register = async (req, res) => {
 const jwt = require('jsonwebtoken');
 const config = require('config');
 
+exports.verify = async (req, res) => {
+  try {
+    const { token } = req.query;
+    
+    // Find user by verification token
+    const user = await User.findOne({ verificationToken: token });
+    
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+    
+    // Mark user as verified
+    user.isVerified = true;
+    user.verificationToken = null;
+    await user.save();
+    
+    res.status(200).json({ message: 'Email verified successfully.' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+};
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
