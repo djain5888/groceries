@@ -7,14 +7,19 @@ const router = express.Router();
 
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
+  host: 'smtp.sendgrid.net',
   port: 587,
   secure: false,
-  service: 'Gmail',
+  service: 'SendGrid',
   auth: {
-    user: 'grocbidder@gmail.com',
-    pass: 'lkrdcfnofciudylj'
-  }
+    user: 'apikey', // SendGrid API key
+    pass: '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'}
+
+ 
+  // auth: {
+  //   user: 'grocbidder@gmail.com',
+  //   pass: 'wdvpdzeduysfqpjw'
+  // }
 });
 
 exports.register = async (req, res) => {
@@ -35,6 +40,7 @@ exports.register = async (req, res) => {
     await user.save();
     const verificationLink = `https://groceries-i18z.onrender.com/api/auth/verify-email?token=${verificationToken}`;
     await transporter.sendMail({
+      from:"grocbidder@gmail.com",
       to: email,
       subject: 'Email Verification',
       html: `<h2>Email Verification</h2>
