@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
   service: 'SendGrid',
   auth: {
     user: 'apikey', // SendGrid API key
-    pass: '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'}
+    pass: process.env.passkey}
 
  
   // auth: {
