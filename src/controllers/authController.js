@@ -3,7 +3,7 @@ const User = require('../models/User');
 const nodemailer = require('nodemailer');
 const express = require('express');
 const router = express.Router();
-
+console.log(process.env.passkey)
 
 
 const transporter = nodemailer.createTransport({
@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
   secure: false,
   service: 'SendGrid',
   auth: {
+    
     user: 'apikey', // SendGrid API key
     pass: process.env.passkey}
 
@@ -40,7 +41,7 @@ exports.register = async (req, res) => {
     await user.save();
     const verificationLink = `https://groceries-i18z.onrender.com/api/auth/verify-email?token=${verificationToken}`;
     await transporter.sendMail({
-      from:"grocbidder@gmail.com",
+      from:"grocbidder@savemygrocery.publicvm.com",
       to: email,
       subject: 'Email Verification',
       html: `<h2>Email Verification</h2>
