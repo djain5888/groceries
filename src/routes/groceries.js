@@ -197,9 +197,9 @@ router.post('/:id/bids', authenticate, async (req, res) => {
       return res.status(400).json({ message: 'You cannot bid on your own grocery listing' });
     }
     console.log(quantity)
-    if (amount < grocery.minPrice) {
-      return res.status(400).json({ message: 'Bid price cannot be lower than minimum price' });
-    }
+    // if (amount < grocery.minPrice) {
+    //   return res.status(400).json({ message: 'Bid price cannot be lower than minimum price' });
+    // }
     if (quantity > grocery.quantity) {
       return res.status(400).json({ message: 'Bid quantity exceeds available quantity' });
     }
