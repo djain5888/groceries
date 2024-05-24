@@ -41,7 +41,7 @@ exports.register = async (req, res) => {
     await user.save();
     const verificationLink = `https://groceries-i18z.onrender.com/api/auth/verify-email?token=${verificationToken}`;
     await transporter.sendMail({
-      from:"grocbidder@savemygrocery.publicvm.com",
+      from:"welcome@grocbidder.online",
       to: email,
       subject: 'Email Verification',
       html: `<h2>Email Verification</h2>
