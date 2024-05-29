@@ -99,6 +99,10 @@ router.get('/UserBids', authenticate,async (req, res) => {
           if (String(bid.buyerId) === userId) {
             console.log("inside matchingg bods")
             bid['groceryID']=grocery._id
+            bid['groceryName']=grocery.itemName
+            bid['expirationDate']=grocery.expirationDate
+            bid['groceryprice']=grocery.minPrice
+            bid['sellerContact']=grocery.sellerContact
             matchedBids.push({'bid': bid
                               });
           }
