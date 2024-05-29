@@ -98,7 +98,9 @@ router.get('/UserBids', authenticate,async (req, res) => {
           // Check if the buyerId of the bid matches the userId
           if (String(bid.buyerId) === userId) {
             console.log("inside matchingg bods")
-            matchedBids.push(bid);
+            bid['groceryID']=grocery._id
+            matchedBids.push({'bid': bid
+                              });
           }
         });
       }
@@ -114,7 +116,26 @@ router.get('/UserBids', authenticate,async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+router.get('/:id/GroceryDetails', authenticate,async (req, res) => {
+  // const userId = parseInt(req.params.userId);
+  // const userBids = bids.filter(bid => bid.groceryId === userId);
+  // res.json(userBids);
+  userid=req.user.id
 
+  try {
+    const groceryId = req.params.id;
+    const grocery = await Grocery.findById(groceryId,"-bids").lean();
+
+    if (!grocery) {
+        return res.status(404).json({ message: 'Grocery not found' });
+    }
+
+    res.json(grocery);
+} catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+}
+});
 router.post('/', authenticate, async (req, res) => {
   const {
     itemName,
